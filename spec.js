@@ -6,25 +6,23 @@ module.exports = function(bus) {
       //return arguments[0]
     //if (arguments.length !== 2)
       //throw new Error('Too many arguments')
-
   }
 
-  me.when = function(whenAddress, whenMessage) {
+  me.given = function(givenAddress, givenMessage) {
     return {
       told: function(expectedAddress, expectedMessage) {
         var isOk = false
         var expectationLog = {
-          when: [whenAddress, whenMessage],
+          given: [givenAddress, givenMessage],
           told: [expectedAddress, expectedMessage]
         }
-        bus.on(expectedAddress).then(function(out, deliveries) {
-          var message = deliveries[expectedAddress]
-          if (message === expectedMessage) {
+        bus.on(expectedAddress).then(function(actualMessage) {
+          if (actualMessage === expectedMessage) {
             isOk = true
-            out('expectation-ok', expectationLog)
+            this.tell('expectation-ok', expectationLog)
           }
         })
-        bus.inject(whenAddress, whenMessage)
+        bus.inject(givenAddress, givenMessage)
         return {
           check: function() {
             if(!isOk) {

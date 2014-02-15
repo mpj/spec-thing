@@ -4,7 +4,12 @@ var chai  = require('chai')
 expect = chai.expect
 chai.should()
 
-describe('when we have a spec and bus', function() {
+
+// TODO multiple tolds
+// TODO Something better than told? Just expect?
+// TODO Stubs (jsut expects that also send)
+
+describe('given we have a spec and bus', function() {
   var spec, bus;
   beforeEach(function() {
     bus = createBus()
@@ -13,37 +18,37 @@ describe('when we have a spec and bus', function() {
 
 
   it('basic case', function() {
-    bus.on('greeting').then(function(O,D) {
-      O('render', '<p>' + D['greeting'] + '</p>')
+    bus.on('greeting').then(function(x) {
+      this.tell('render', '<p>' + x + '</p>')
     })
 
     spec
-      .when('greeting', 'hello!!')
+      .given('greeting', 'hello!!')
       .told('render', '<p>hello!!</p>')
       .check()
 
 
     bus.log[2].should.deep.equal({
       unhandled: [ 'expectation-ok', {
-        when: [ 'greeting', 'hello!!' ],
+        given: [ 'greeting', 'hello!!' ],
         told: [ 'render', '<p>hello!!</p>']
       }]
     })
   })
 
   it('basic case (failure)', function() {
-    bus.on('greeting').then(function(O,D) {
-      O('render', '<p>' + D['greeting'] + '</p>')
+    bus.on('greeting').then(function(x) {
+      this.tell('render', '<p>' + x + '</p>')
     })
 
     spec
-      .when('greeting', 'hello!!')
+      .given('greeting', 'hello!!')
       .told('render', '<div>hello!!</div>') // <- spec wants divs!
       .check()
 
     bus.log[2].should.deep.equal({
       unhandled: [ 'expectation-failure', {
-        when: [ 'greeting', 'hello!!' ],
+        given: [ 'greeting', 'hello!!' ],
         told: [ 'render', '<div>hello!!</div>']
       }]
     })
