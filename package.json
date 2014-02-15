@@ -1,0 +1,22 @@
+{
+  "name": "spec-thing",
+  "version": "0.0.1",
+  "author": "Mattias Petter Johansson <mpj@mpj.me>",
+  "description": "Some thing that is a spec?",
+  "main": "./spec.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mpj/bus-thing"
+  },
+  "dependencies": {
+    "bus-thing": "0.0.1",
+    "mout": "~0.8.0",
+    "esprima": "~1.0.4",
+    "deep-equal": "~0.2.1"
+  },
+  "devDependencies": {
+    "mocha": "~1.17.1",
+    "chai": "~1.9.0"
+  },
+  "license": "MIT"
+}
