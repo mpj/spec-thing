@@ -4,8 +4,12 @@ var chai  = require('chai')
 expect = chai.expect
 chai.should()
 
+// TODO multiple givens
 // TODO multiple expects
 // TODO Stubs (jsut expects that also send)
+// TODO Reusable givens (might need clonable bus)
+//
+// IDEA Perhaps JSON interface instead? Code as data?
 
 describe('given we have a spec and bus', function() {
   var spec, bus;
@@ -50,6 +54,24 @@ describe('given we have a spec and bus', function() {
         expect: [ 'render', '<div>hello!!</div>']
       }]
     })
+  })
+
+  xit('multiple givens', function() {
+    spec
+      .given('a', true)
+      .given('b', true)
+      .expect('ok', true)
+
+    bus
+      .on('a')
+      .on('b')
+      .then(function(a, b) {
+        if (a && b)
+          this.send('ok', true)
+      })
+
+    bus.log[0].should.deep.equal(
+      [ 'ok', true ])
   })
 
   //console.log("log\n", JSON.stringify(bus.log, null, 2))

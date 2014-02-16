@@ -1,5 +1,6 @@
+var partial = require('mout/function/partial')
+
 module.exports = function(bus) {
-  var me = {}
 
   var asDelivery = function(arguments) {
     //if (arguments.length === 1 && isArray(arguments[0]))
@@ -8,31 +9,46 @@ module.exports = function(bus) {
       //throw new Error('Too many arguments')
   }
 
-  me.given = function(givenAddress, givenMessage) {
+  function createCommand(givens) {
+    givens = givens.slice(0)
     return {
-      expect: function(expectedAddress, expectedMessage) {
-        var isOk = false
-        var expectationLog = {
-          given: [givenAddress, givenMessage],
-          expect: [expectedAddress, expectedMessage]
-        }
-        bus.on(expectedAddress).then(function(actualMessage) {
-          if (actualMessage === expectedMessage) {
-            isOk = true
-            this.send('expectation-ok', expectationLog)
-          }
-        })
-        bus.inject(givenAddress, givenMessage)
+      given: function(givenAddress, givenMessage) {
+        var newGivens = givens.concat( [[ givenAddress, givenMessage ]] )
+
         return {
-          check: function() {
-            if(!isOk) {
-              bus.inject('expectation-failure', expectationLog)
+          expect: function(expectedAddress, expectedMessage) {
+            var isOk = false
+            var expectationLog = {
+              given: [givenAddress, givenMessage],
+              expect: [expectedAddress, expectedMessage]
             }
-          }
+            bus.on(expectedAddress).then(function(actualMessage) {
+              if (actualMessage === expectedMessage) {
+                isOk = true
+                this.send('expectation-ok', expectationLog)
+              }
+            })
+            newGivens.forEach(function(given) {
+              bus.inject.apply(bus, given)
+            })
+
+            return {
+              check: function() {
+                if(!isOk) {
+                  bus.inject('expectation-failure', expectationLog)
+                }
+              }
+            }
+          },
+          given: partial(createCommand, givens)
         }
       }
     }
   }
+
+  var me = createCommand([])
+
+
 
   return me
 }
