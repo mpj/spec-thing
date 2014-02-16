@@ -10,38 +10,34 @@ module.exports = function(bus) {
   }
 
   function createCommand(givens) {
-    givens = givens.slice(0)
     return {
       given: function(givenAddress, givenMessage) {
-        var newGivens = givens.concat( [[ givenAddress, givenMessage ]] )
-
-        return {
-          expect: function(expectedAddress, expectedMessage) {
-            var isOk = false
-            var expectationLog = {
-              given: [givenAddress, givenMessage],
-              expect: [expectedAddress, expectedMessage]
-            }
-            bus.on(expectedAddress).then(function(actualMessage) {
-              if (actualMessage === expectedMessage) {
-                isOk = true
-                this.send('expectation-ok', expectationLog)
-              }
-            })
-            newGivens.forEach(function(given) {
-              bus.inject.apply(bus, given)
-            })
-
-            return {
-              check: function() {
-                if(!isOk) {
-                  bus.inject('expectation-failure', expectationLog)
-                }
-              }
-            }
-          },
-          given: partial(createCommand, givens)
+        return createCommand(
+          givens.slice(0).concat([[ givenAddress, givenMessage ]]))
+      },
+      expect: function(expectedAddress, expectedMessage) {
+        var isOk = false
+        var expectationLog = {
+          given: givens,
+          expect: [expectedAddress, expectedMessage]
         }
+        bus.on(expectedAddress).then(function(actualMessage) {
+          if (actualMessage === expectedMessage) {
+            isOk = true
+            this.send('expectation-ok', expectationLog)
+          }
+        })
+        givens.forEach(function(given) {
+          bus.inject.apply(bus, given)
+        })
+        bus.on('check-expectations').then(function() {
+          if(!isOk)
+            bus.inject('expectation-failure', expectationLog)
+        })
+        return createCommand(givens)
+      },
+      check: function() {
+        bus.inject('check-expectations')
       }
     }
   }
