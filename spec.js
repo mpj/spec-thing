@@ -10,11 +10,11 @@ module.exports = function(bus) {
 
   me.given = function(givenAddress, givenMessage) {
     return {
-      told: function(expectedAddress, expectedMessage) {
+      expect: function(expectedAddress, expectedMessage) {
         var isOk = false
         var expectationLog = {
           given: [givenAddress, givenMessage],
-          told: [expectedAddress, expectedMessage]
+          expect: [expectedAddress, expectedMessage]
         }
         bus.on(expectedAddress).then(function(actualMessage) {
           if (actualMessage === expectedMessage) {

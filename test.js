@@ -4,9 +4,7 @@ var chai  = require('chai')
 expect = chai.expect
 chai.should()
 
-
-// TODO Something better than told? Just expect?
-// TODO multiple tolds
+// TODO multiple expects
 // TODO Stubs (jsut expects that also send)
 
 describe('given we have a spec and bus', function() {
@@ -24,14 +22,14 @@ describe('given we have a spec and bus', function() {
 
     spec
       .given('greeting', 'hello!!')
-      .told('render', '<p>hello!!</p>')
+      .expect('render', '<p>hello!!</p>')
       .check()
 
 
     bus.log[2].should.deep.equal({
       unhandled: [ 'expectation-ok', {
         given: [ 'greeting', 'hello!!' ],
-        told: [ 'render', '<p>hello!!</p>']
+        expect: [ 'render', '<p>hello!!</p>']
       }]
     })
   })
@@ -43,13 +41,13 @@ describe('given we have a spec and bus', function() {
 
     spec
       .given('greeting', 'hello!!')
-      .told('render', '<div>hello!!</div>') // <- spec wants divs!
+      .expect('render', '<div>hello!!</div>') // <- spec wants divs!
       .check()
 
     bus.log[2].should.deep.equal({
       unhandled: [ 'expectation-failure', {
         given: [ 'greeting', 'hello!!' ],
-        told: [ 'render', '<div>hello!!</div>']
+        expect: [ 'render', '<div>hello!!</div>']
       }]
     })
   })
