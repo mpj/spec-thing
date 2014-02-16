@@ -19,7 +19,7 @@ module.exports = function(bus) {
         bus.on(expectedAddress).then(function(actualMessage) {
           if (actualMessage === expectedMessage) {
             isOk = true
-            this.tell('expectation-ok', expectationLog)
+            this.send('expectation-ok', expectationLog)
           }
         })
         bus.inject(givenAddress, givenMessage)

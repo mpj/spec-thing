@@ -5,8 +5,8 @@ expect = chai.expect
 chai.should()
 
 
-// TODO multiple tolds
 // TODO Something better than told? Just expect?
+// TODO multiple tolds
 // TODO Stubs (jsut expects that also send)
 
 describe('given we have a spec and bus', function() {
@@ -19,7 +19,7 @@ describe('given we have a spec and bus', function() {
 
   it('basic case', function() {
     bus.on('greeting').then(function(x) {
-      this.tell('render', '<p>' + x + '</p>')
+      this.send('render', '<p>' + x + '</p>')
     })
 
     spec
@@ -38,7 +38,7 @@ describe('given we have a spec and bus', function() {
 
   it('basic case (failure)', function() {
     bus.on('greeting').then(function(x) {
-      this.tell('render', '<p>' + x + '</p>')
+      this.send('render', '<p>' + x + '</p>')
     })
 
     spec
