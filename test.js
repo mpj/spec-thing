@@ -7,7 +7,6 @@ chai.should()
 // TODO multiple expects
 // TODO Stubs (jsut expects that also send)
 // TODO Reusable givens (might need clonable bus)
-// TODO log.lastMessageOnAddress
 //
 // IDEA Perhaps JSON interface instead? Code as data?
 
@@ -29,11 +28,9 @@ describe('given we have a spec and bus', function() {
       .check()
 
 
-    bus.log[2].should.deep.equal({
-      unhandled: [ 'expectation-ok', {
-        given: [[ 'greeting', 'hello!!' ]],
-        expect: [ 'render', '<p>hello!!</p>']
-      }]
+    bus.log.wasSent('expectation-ok', {
+      given: [[ 'greeting', 'hello!!' ]],
+      expect: [ 'render', '<p>hello!!</p>']
     })
   })
 
@@ -47,11 +44,9 @@ describe('given we have a spec and bus', function() {
       .expect('render', '<div>hello!!</div>') // <- spec wants divs!
       .check()
 
-    bus.log[3].should.deep.equal({
-      unhandled: [ 'expectation-failure', {
-        given: [[ 'greeting', 'hello!!' ]],
-        expect: [ 'render', '<div>hello!!</div>']
-      }]
+    bus.log.wasSent('expectation-failure', {
+      given: [[ 'greeting', 'hello!!' ]],
+      expect: [ 'render', '<div>hello!!</div>']
     })
   })
 
@@ -69,18 +64,13 @@ describe('given we have a spec and bus', function() {
       .given('b', true)
       .expect('ok', true)
 
-
-    bus.log[3].unhandled.should.deep.equal(
-      ['expectation-ok', {
-        'given': [
-          [ 'a', true ],
-          [ 'b', true ]
-        ],
-        'expect': [ 'ok', true ]
-      }])
+    bus.log.wasSent('expectation-ok', {
+      'given': [
+        [ 'a', true ],
+        [ 'b', true ]
+      ],
+      'expect': [ 'ok', true ]
+    })
   })
-
-  //console.log("log\n", JSON.stringify(bus.log, null, 2))
-
 
 })
