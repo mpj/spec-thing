@@ -94,20 +94,19 @@ describe('given we have a spec and bus', function() {
 
     spec
       .given('a')
-      .expectAndSimulate(['b', true], ['c', true])
+      .expectAndSimulate(['b'], ['c', true])
       .expect('d')
       .go()
 
     bus.log
-      .wasSent('expectation-ok', [ 'd', true ])
+      .wasSent('expectation-ok', [ 'd' ])
       .should.be.true
   })
 
   it('implicit message', function() {
     bus.on('a').then(function() { this.send('b') })
-
     spec.given('a').expect('b').go()
-    bus.log.wasSent('expectation-ok', [ 'b', true ] ).should.be.true
+    bus.log.wasSent('expectation-ok', [ 'b' ] ).should.be.true
   })
 
   it('implicit message (null should not be translated to true)', function() {
@@ -115,6 +114,13 @@ describe('given we have a spec and bus', function() {
 
     spec.given('a').expect('b', null).go()
     bus.log.wasSent('expectation-ok', [ 'b', null ] ).should.be.true
+  })
+
+  it('expects w/o message are catch-all, not inclusive', function() {
+    bus.on('a').then(function() { this.send('b', 'cat with a hat') })
+
+    spec.given('a').expect('b').go()
+    bus.log.wasSent('expectation-ok', [ 'b' ] ).should.be.true
   })
 
 })

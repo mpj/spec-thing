@@ -16,14 +16,16 @@ module.exports = function(bus) {
         return createCommand()
       },
       expect: function(expectedAddress, expectedMessage, simulateAddress, simulateMessage) {
-        expectedMessage = isUndefined(expectedMessage) ? true : expectedMessage
         var isOk = false
         bus.on(expectedAddress).then(function(actualMessage) {
-          if (actualMessage === expectedMessage) {
+          if (actualMessage === expectedMessage || isUndefined(expectedMessage)) {
             isOk = true
             if (simulateMessage && simulateAddress)
               this.send(simulateAddress, simulateMessage)
+
             this.send('expectation-ok',
+              isUndefined(expectedMessage) ?
+              [ expectedAddress ] :
               [ expectedAddress, expectedMessage ])
           }
         })
