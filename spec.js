@@ -9,40 +9,42 @@ module.exports = function(bus) {
       //throw new Error('Too many arguments')
   }
 
-  function createCommand(givens) {
+  function createCommand() {
     return {
       given: function(givenAddress, givenMessage) {
-        return createCommand(
-          givens.slice(0).concat([[ givenAddress, givenMessage ]]))
+        bus.on('spec-run').then(function() {
+          this.send(givenAddress, givenMessage)
+        })
+        return createCommand()
       },
       expect: function(expectedAddress, expectedMessage) {
         var isOk = false
-        var expectationLog = {
-          given: givens,
-          expect: [expectedAddress, expectedMessage]
-        }
         bus.on(expectedAddress).then(function(actualMessage) {
           if (actualMessage === expectedMessage) {
             isOk = true
-            this.send('expectation-ok', expectationLog)
+            this.send('expectation-ok',
+              [ expectedAddress, expectedMessage ])
           }
         })
-        givens.forEach(function(given) {
-          bus.inject.apply(bus, given)
-        })
-        bus.on('check-expectations').then(function() {
+
+        bus.on('spec-check').then(function() {
           if(!isOk)
-            this.send('expectation-failure', expectationLog)
+            this.send('expectation-failure',
+              [ expectedAddress, expectedMessage ])
         })
-        return createCommand(givens)
+        return createCommand()
       },
       check: function() {
-        bus.inject('check-expectations')
+        bus.inject('spec-check')
+      },
+      go: function() {
+        bus.inject('spec-run')
+        return createCommand()
       }
     }
   }
 
-  var me = createCommand([])
+  var me = createCommand()
 
 
 

@@ -25,13 +25,11 @@ describe('given we have a spec and bus', function() {
     spec
       .given('greeting', 'hello!!')
       .expect('render', '<p>hello!!</p>')
+      .go()
       .check()
 
 
-    bus.log.wasSent('expectation-ok', {
-      given: [[ 'greeting', 'hello!!' ]],
-      expect: [ 'render', '<p>hello!!</p>']
-    })
+    bus.log.wasSent('expectation-ok', [ 'render', '<p>hello!!</p>'] )
   })
 
   it('basic case (failure)', function() {
@@ -42,12 +40,10 @@ describe('given we have a spec and bus', function() {
     spec
       .given('greeting', 'hello!!')
       .expect('render', '<div>hello!!</div>') // <- spec wants divs!
+      .go()
       .check()
 
-    bus.log.wasSent('expectation-failure', {
-      given: [[ 'greeting', 'hello!!' ]],
-      expect: [ 'render', '<div>hello!!</div>']
-    })
+    bus.log.wasSent('expectation-failure', [ 'render', '<div>hello!!</div>'])
   })
 
   it('multiple givens', function() {
@@ -63,14 +59,10 @@ describe('given we have a spec and bus', function() {
       .given('a', true)
       .given('b', true)
       .expect('ok', true)
+      .go()
 
-    bus.log.wasSent('expectation-ok', {
-      'given': [
-        [ 'a', true ],
-        [ 'b', true ]
-      ],
-      'expect': [ 'ok', true ]
-    })
+
+    bus.log.wasSent('expectation-ok', [ 'ok', true ] ).should.be.true
   })
 
 })
