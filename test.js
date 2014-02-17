@@ -4,7 +4,6 @@ var chai  = require('chai')
 expect = chai.expect
 chai.should()
 
-// TODO multiple expects
 // TODO Stubs (jsut expects that also send)
 // TODO Reusable givens (might need clonable bus)
 //
@@ -63,6 +62,38 @@ describe('given we have a spec and bus', function() {
 
 
     bus.log.wasSent('expectation-ok', [ 'ok', true ] ).should.be.true
+  })
+
+  it('multiple expect', function() {
+    bus
+      .on('a')
+      .then(function() {
+        this.send('b')
+        this.send('c')
+      })
+
+    spec
+      .given('a')
+      .expect('b', true)
+      .expect('c', true)
+      .go()
+
+    bus.log.wasSent('expectation-ok', [ 'b', true ] ).should.be.true
+    bus.log.wasSent('expectation-ok', [ 'c', true ] ).should.be.true
+  })
+
+  it('implicit message', function() {
+    bus.on('a').then(function() { this.send('b') })
+
+    spec.given('a').expect('b').go()
+    bus.log.wasSent('expectation-ok', [ 'b', true ] ).should.be.true
+  })
+
+  it('implicit message (null should not be translated to true)', function() {
+    bus.on('a').then(function() { this.send('b', null) })
+
+    spec.given('a').expect('b', null).go()
+    bus.log.wasSent('expectation-ok', [ 'b', null ] ).should.be.true
   })
 
 })

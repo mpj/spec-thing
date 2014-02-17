@@ -1,4 +1,5 @@
 var partial = require('mout/function/partial')
+var isUndefined = require('mout/lang/isUndefined')
 
 module.exports = function(bus) {
 
@@ -18,6 +19,7 @@ module.exports = function(bus) {
         return createCommand()
       },
       expect: function(expectedAddress, expectedMessage) {
+        expectedMessage = isUndefined(expectedMessage) ? true : expectedMessage
         var isOk = false
         bus.on(expectedAddress).then(function(actualMessage) {
           if (actualMessage === expectedMessage) {
