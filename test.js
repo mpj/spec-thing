@@ -4,7 +4,6 @@ var chai  = require('chai')
 expect = chai.expect
 chai.should()
 
-// TODO Stubs (jsut expects that also send)
 // TODO Reusable givens (might need clonable bus)
 // TODO implicit true message in stubs (or perhaps just go for JSON interface?)
 // IDEA Perhaps JSON interface instead? Code as data?
