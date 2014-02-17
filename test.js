@@ -6,7 +6,7 @@ chai.should()
 
 // TODO Stubs (jsut expects that also send)
 // TODO Reusable givens (might need clonable bus)
-//
+// TODO implicit true message in stubs (or perhaps just go for JSON interface?)
 // IDEA Perhaps JSON interface instead? Code as data?
 
 describe('given we have a spec and bus', function() {
@@ -80,6 +80,27 @@ describe('given we have a spec and bus', function() {
 
     bus.log.wasSent('expectation-ok', [ 'b', true ] ).should.be.true
     bus.log.wasSent('expectation-ok', [ 'c', true ] ).should.be.true
+  })
+
+  it('expects that simulate messages', function() {
+    bus
+      .on('a')
+      .then(function() {
+        this.send('b')
+      })
+      .on('c').then(function() {
+        this.send('d')
+      })
+
+    spec
+      .given('a')
+      .expectAndSimulate(['b', true], ['c', true])
+      .expect('d')
+      .go()
+
+    bus.log
+      .wasSent('expectation-ok', [ 'd', true ])
+      .should.be.true
   })
 
   it('implicit message', function() {

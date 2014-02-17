@@ -3,13 +3,6 @@ var isUndefined = require('mout/lang/isUndefined')
 
 module.exports = function(bus) {
 
-  var asDelivery = function(arguments) {
-    //if (arguments.length === 1 && isArray(arguments[0]))
-      //return arguments[0]
-    //if (arguments.length !== 2)
-      //throw new Error('Too many arguments')
-  }
-
   function createCommand() {
     return {
       given: function(givenAddress, givenMessage) {
@@ -18,12 +11,18 @@ module.exports = function(bus) {
         })
         return createCommand()
       },
-      expect: function(expectedAddress, expectedMessage) {
+      expectAndSimulate: function(expect, simulate) {
+        this.expect(expect[0], expect[1], simulate[0], simulate[1])
+        return createCommand()
+      },
+      expect: function(expectedAddress, expectedMessage, simulateAddress, simulateMessage) {
         expectedMessage = isUndefined(expectedMessage) ? true : expectedMessage
         var isOk = false
         bus.on(expectedAddress).then(function(actualMessage) {
           if (actualMessage === expectedMessage) {
             isOk = true
+            if (simulateMessage && simulateAddress)
+              this.send(simulateAddress, simulateMessage)
             this.send('expectation-ok',
               [ expectedAddress, expectedMessage ])
           }
