@@ -32,7 +32,7 @@ module.exports = function(bus) {
         })
         bus.on('check-expectations').then(function() {
           if(!isOk)
-            bus.inject('expectation-failure', expectationLog)
+            this.send('expectation-failure', expectationLog)
         })
         return createCommand(givens)
       },
