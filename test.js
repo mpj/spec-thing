@@ -4,9 +4,6 @@ var chai  = require('chai')
 expect = chai.expect
 chai.should()
 
-// TODO Reusable givens (might need clonable bus)
-// TODO implicit true message in stubs (or perhaps just go for JSON interface?)
-// IDEA Perhaps JSON interface instead? Code as data?
 
 describe('given we have a spec and bus', function() {
   var spec, bus;
@@ -25,7 +22,6 @@ describe('given we have a spec and bus', function() {
       .expect('render', '<p>hello!!</p>')
       .go()
       .check()
-
 
     bus.log.wasSent('expectation-ok', [ 'render', '<p>hello!!</p>'] )
   })
@@ -81,6 +77,43 @@ describe('given we have a spec and bus', function() {
     bus.log.wasSent('expectation-ok', [ 'c', true ] ).should.be.true
   })
 
+  describe('expects that simulate messages', function() {
+    beforeEach(function() {
+      bus
+        .on('a')
+        .then(function() {
+          this.send('b')
+        })
+        .on('c', true).then(function() {
+          this.send('d')
+        })
+    })
+
+    it('explicit', function() {
+      spec
+        .given('a')
+        .expectAndSimulate(['b', true], ['c', true])
+        .expect('d')
+        .go()
+
+      bus.log
+        .wasSent('expectation-ok', [ 'd' ])
+        .should.be.true
+    })
+
+    it('implicit', function() {
+      spec
+        .given('a')
+        .expectAndSimulate(['b'], ['c']) // <- look, no 'trues'
+        .expect('d')
+        .go()
+
+      bus.log
+        .wasSent('expectation-ok', [ 'd' ])
+        .should.be.true
+    })
+
+  })
   it('expects that simulate messages', function() {
     bus
       .on('a')
@@ -91,15 +124,7 @@ describe('given we have a spec and bus', function() {
         this.send('d')
       })
 
-    spec
-      .given('a')
-      .expectAndSimulate(['b'], ['c', true])
-      .expect('d')
-      .go()
 
-    bus.log
-      .wasSent('expectation-ok', [ 'd' ])
-      .should.be.true
   })
 
   it('implicit message', function() {
@@ -122,4 +147,12 @@ describe('given we have a spec and bus', function() {
     bus.log.wasSent('expectation-ok', [ 'b' ] ).should.be.true
   })
 
+
+
 })
+
+function dbg(bus) {
+  console.log('')
+  console.log('--- DEBUG ---')
+  console.log(JSON.stringify(bus.log.all(), null, 2))
+}

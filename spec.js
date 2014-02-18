@@ -20,8 +20,11 @@ module.exports = function(bus) {
         bus.on(expectedAddress).then(function(actualMessage) {
           if (actualMessage === expectedMessage || isUndefined(expectedMessage)) {
             isOk = true
-            if (simulateMessage && simulateAddress)
-              this.send(simulateAddress, simulateMessage)
+            if (simulateAddress) {
+              this.send(simulateAddress,
+                isUndefined(simulateMessage) ? true : simulateMessage )
+            }
+
 
             this.send('expectation-ok',
               isUndefined(expectedMessage) ?
