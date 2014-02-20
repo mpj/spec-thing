@@ -4,6 +4,13 @@ var chai  = require('chai')
 expect = chai.expect
 chai.should()
 
+// TODO Implicit messages for expectation-failure
+// TODO: Change interface so that spec is something that runs ON
+// a bus rather than something that attaches to one
+// TODO: Chainability on these?
+//var givenABC = spec().given('a').given('b').given('c')
+//var givenDE = spec().given('d').given('e')
+//spec(givenABC)(givenDE).expect('all').check(bus)
 
 describe('given we have a spec and bus', function() {
   var spec, bus;
