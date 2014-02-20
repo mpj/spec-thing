@@ -114,18 +114,7 @@ describe('given we have a spec and bus', function() {
     })
 
   })
-  it('expects that simulate messages', function() {
-    bus
-      .on('a')
-      .then(function() {
-        this.send('b')
-      })
-      .on('c').then(function() {
-        this.send('d')
-      })
 
-
-  })
 
   it('implicit message', function() {
     bus.on('a').then(function() { this.send('b') })
