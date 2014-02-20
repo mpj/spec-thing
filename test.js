@@ -5,12 +5,7 @@ expect = chai.expect
 chai.should()
 
 // TODO Implicit messages for expectation-failure
-// TODO: Change interface so that spec is something that runs ON
-// a bus rather than something that attaches to one
-// TODO: Chainability on these?
-//var givenABC = spec().given('a').given('b').given('c')
-//var givenDE = spec().given('d').given('e')
-//spec(givenABC)(givenDE).expect('all').check(bus)
+
 
 describe('given we have a spec and bus', function() {
   var bus;
@@ -135,6 +130,24 @@ describe('given we have a spec and bus', function() {
 
     spec().given('a').expect('b').check(bus)
     bus.log.wasSent('expectation-ok', [ 'b' ] ).should.be.true
+  })
+
+  it('chainable givens', function() {
+    var givenAB = spec().given('a').given('b')
+    var givenCD = spec().given('c').given('d')
+
+    bus.when('a').when('b').when('c').when('d').when('e').then(function() {
+      this.send('f')
+    })
+    spec()
+      .extend(givenAB)
+      .extend(givenCD)
+      .given('e')
+      .expect('f')
+      .check(bus)
+
+      bus.log.wasSent('expectation-ok', [ 'f' ] ).should.be.true
+
   })
 
 
