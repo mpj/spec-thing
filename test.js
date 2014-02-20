@@ -1,5 +1,5 @@
 var createBus = require('bus-thing')
-var createSpec = require('./spec')
+var spec = require('./spec')
 var chai  = require('chai')
 expect = chai.expect
 chai.should()
@@ -13,22 +13,18 @@ chai.should()
 //spec(givenABC)(givenDE).expect('all').check(bus)
 
 describe('given we have a spec and bus', function() {
-  var spec, bus;
-  beforeEach(function() {
-    bus = createBus()
-    spec = createSpec(bus)
-  })
+  var bus;
+  beforeEach(function() { bus = createBus() })
 
   it('basic case', function() {
     bus.on('greeting').then(function(x) {
       this.send('render', '<p>' + x + '</p>')
     })
 
-    spec
+    spec()
       .given('greeting', 'hello!!')
       .expect('render', '<p>hello!!</p>')
-      .go()
-      .check()
+      .check(bus)
 
     bus.log.wasSent('expectation-ok', [ 'render', '<p>hello!!</p>'] )
   })
@@ -38,11 +34,10 @@ describe('given we have a spec and bus', function() {
       this.send('render', '<p>' + x + '</p>')
     })
 
-    spec
+    spec()
       .given('greeting', 'hello!!')
       .expect('render', '<div>hello!!</div>') // <- spec wants divs!
-      .go()
-      .check()
+      .check(bus)
 
     bus.log.wasSent('expectation-failure', [ 'render', '<div>hello!!</div>'])
   })
@@ -56,12 +51,11 @@ describe('given we have a spec and bus', function() {
           this.send('ok', true)
       })
 
-    spec
+    spec()
       .given('a', true)
       .given('b', true)
       .expect('ok', true)
-      .go()
-
+      .check(bus)
 
     bus.log.wasSent('expectation-ok', [ 'ok', true ] ).should.be.true
   })
@@ -74,11 +68,11 @@ describe('given we have a spec and bus', function() {
         this.send('c')
       })
 
-    spec
+    spec()
       .given('a')
       .expect('b', true)
       .expect('c', true)
-      .go()
+      .check(bus)
 
     bus.log.wasSent('expectation-ok', [ 'b', true ] ).should.be.true
     bus.log.wasSent('expectation-ok', [ 'c', true ] ).should.be.true
@@ -97,11 +91,11 @@ describe('given we have a spec and bus', function() {
     })
 
     it('explicit', function() {
-      spec
+      spec()
         .given('a')
         .expectAndSimulate(['b', true], ['c', true])
         .expect('d')
-        .go()
+        .check(bus)
 
       bus.log
         .wasSent('expectation-ok', [ 'd' ])
@@ -109,11 +103,11 @@ describe('given we have a spec and bus', function() {
     })
 
     it('implicit', function() {
-      spec
+      spec()
         .given('a')
         .expectAndSimulate(['b'], ['c']) // <- look, no 'trues'
         .expect('d')
-        .go()
+        .check(bus)
 
       bus.log
         .wasSent('expectation-ok', [ 'd' ])
@@ -125,21 +119,21 @@ describe('given we have a spec and bus', function() {
 
   it('implicit message', function() {
     bus.on('a').then(function() { this.send('b') })
-    spec.given('a').expect('b').go()
+    spec().given('a').expect('b').check(bus)
     bus.log.wasSent('expectation-ok', [ 'b' ] ).should.be.true
   })
 
   it('implicit message (null should not be translated to true)', function() {
     bus.on('a').then(function() { this.send('b', null) })
 
-    spec.given('a').expect('b', null).go()
+    spec().given('a').expect('b', null).check(bus)
     bus.log.wasSent('expectation-ok', [ 'b', null ] ).should.be.true
   })
 
   it('expects w/o message are catch-all, not inclusive', function() {
     bus.on('a').then(function() { this.send('b', 'cat with a hat') })
 
-    spec.given('a').expect('b').go()
+    spec().given('a').expect('b').check(bus)
     bus.log.wasSent('expectation-ok', [ 'b' ] ).should.be.true
   })
 
