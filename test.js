@@ -5,7 +5,9 @@ expect = chai.expect
 chai.should()
 
 // TODO Implicit messages for expectation-failure
-
+// TODO Given and Check should be visualized as what they are - workers.
+// The only thing we hide is spec-start and spec-done
+//
 
 describe('given we have a spec and bus', function() {
   var bus;

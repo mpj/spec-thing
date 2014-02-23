@@ -21,7 +21,7 @@ module.exports = function() {
     check: function(bus) {
       me.instructions.forEach(function(ins) {
         if (ins[0] === 'given') {
-          bus.on('spec-run').then(function() {
+          bus.on('spec-start').then(function() {
             this.send(ins[1], ins[2])
           })
         }
@@ -46,7 +46,7 @@ module.exports = function() {
             }
           })
 
-          bus.on('spec-check').then(function() {
+          bus.on('spec-done').then(function() {
             if(!isOk)
               this.send('expectation-failure',
                 [ expectedAddress, expectedMessage ])
@@ -54,8 +54,8 @@ module.exports = function() {
         }
 
       })
-      bus.inject('spec-run')
-      bus.inject('spec-check')
+      bus.inject('spec-start')
+      bus.inject('spec-done')
     },
     extend: function(parent) {
       me.instructions.concat(parent.instructions)
