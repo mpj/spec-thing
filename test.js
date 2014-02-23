@@ -24,6 +24,7 @@ describe('given we have a spec and bus', function() {
     bus.log.wasSent('expectation-ok', [ 'render', '<p>hello!!</p>'] )
     bus.log.all()[1].sender.name.should.equal('given')
     bus.log.all()[3].sender.name.should.equal('expectationSuccess')
+    bus.log.all()[3].sent[0].logOnly.should.equal(true)
   })
 
   it('basic case (failure)', function() {
@@ -38,6 +39,7 @@ describe('given we have a spec and bus', function() {
 
     bus.log.wasSent('expectation-failure', [ 'render', '<div>hello!!</div>'])
     bus.log.all()[5].sender.name.should.equal('expectationFailure')
+    bus.log.all()[5].sent[0].logOnly.should.equal(true)
   })
 
   it('multiple givens', function() {

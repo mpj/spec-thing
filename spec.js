@@ -39,7 +39,7 @@ module.exports = function() {
                 this.send(simulateAddress,
                   isUndefined(simulateMessage) ? true : simulateMessage )
               }
-              this.send('expectation-ok',
+              this.log('expectation-ok',
                 isUndefined(expectedMessage) ?
                 [ expectedAddress ] :
                 [ expectedAddress, expectedMessage ])
@@ -48,7 +48,7 @@ module.exports = function() {
 
           bus.on('spec-done').then(function expectationFailure() {
             if(!isOk)
-              this.send('expectation-failure',
+              this.log('expectation-failure',
                 [ expectedAddress, expectedMessage ])
           })
         }
