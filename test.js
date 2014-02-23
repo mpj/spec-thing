@@ -5,8 +5,6 @@ expect = chai.expect
 chai.should()
 
 // TODO Implicit messages for expectation-failure
-// TODO Given and Check should be visualized as what they are - workers.
-// The only thing we hide is spec-start and spec-done
 //
 
 describe('given we have a spec and bus', function() {
@@ -24,6 +22,8 @@ describe('given we have a spec and bus', function() {
       .check(bus)
 
     bus.log.wasSent('expectation-ok', [ 'render', '<p>hello!!</p>'] )
+    bus.log.all()[1].sender.name.should.equal('given')
+    bus.log.all()[3].sender.name.should.equal('expectationSuccess')
   })
 
   it('basic case (failure)', function() {
@@ -37,6 +37,7 @@ describe('given we have a spec and bus', function() {
       .check(bus)
 
     bus.log.wasSent('expectation-failure', [ 'render', '<div>hello!!</div>'])
+    bus.log.all()[5].sender.name.should.equal('expectationFailure')
   })
 
   it('multiple givens', function() {
@@ -110,9 +111,7 @@ describe('given we have a spec and bus', function() {
         .wasSent('expectation-ok', [ 'd' ])
         .should.be.true
     })
-
   })
-
 
   it('implicit message', function() {
     bus.on('a').then(function() { this.send('b') })
@@ -151,9 +150,6 @@ describe('given we have a spec and bus', function() {
       bus.log.wasSent('expectation-ok', [ 'f' ] ).should.be.true
 
   })
-
-
-
 })
 
 function dbg(bus) {

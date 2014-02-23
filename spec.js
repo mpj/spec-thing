@@ -21,7 +21,7 @@ module.exports = function() {
     check: function(bus) {
       me.instructions.forEach(function(ins) {
         if (ins[0] === 'given') {
-          bus.on('spec-start').then(function() {
+          bus.on('spec-start').then(function given() {
             this.send(ins[1], ins[2])
           })
         }
@@ -32,7 +32,7 @@ module.exports = function() {
           var simulateMessage = ins[4]
 
           var isOk = false
-          bus.on(expectedAddress).then(function(actualMessage) {
+          bus.on(expectedAddress).then(function expectationSuccess(actualMessage) {
             if (actualMessage === expectedMessage || isUndefined(expectedMessage)) {
               isOk = true
               if (simulateAddress) {
@@ -46,7 +46,7 @@ module.exports = function() {
             }
           })
 
-          bus.on('spec-done').then(function() {
+          bus.on('spec-done').then(function expectationFailure() {
             if(!isOk)
               this.send('expectation-failure',
                 [ expectedAddress, expectedMessage ])
