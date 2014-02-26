@@ -33,23 +33,19 @@ module.exports = function() {
 
           var isOk = false
           bus.on(expectedAddress).then(function expectationMet(actualMessage) {
-            if (actualMessage === expectedMessage || isUndefined(expectedMessage)) {
+            if (actualMessage === expectedMessage || isUndefined(expectedMessage)) { // TODO: try removing this if
               isOk = true
               if (simulateAddress) {
                 this.send(simulateAddress,
                   isUndefined(simulateMessage) ? true : simulateMessage )
               }
-              this.log('expectation-ok',
-                isUndefined(expectedMessage) ?
-                [ expectedAddress ] :
-                [ expectedAddress, expectedMessage ])
+              this.log(expectedAddress, expectedMessage)
             }
           })
 
           bus.on('spec-done').then(function expectationNotMet() {
             if(!isOk)
-              this.log('expectation-failure',
-                [ expectedAddress, expectedMessage ])
+              this.log(expectedAddress, expectedMessage)
           })
         }
 
