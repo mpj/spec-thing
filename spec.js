@@ -32,7 +32,7 @@ module.exports = function() {
           var simulateMessage = ins[4]
 
           var isOk = false
-          bus.on(expectedAddress).then(function expectationSuccess(actualMessage) {
+          bus.on(expectedAddress).then(function expectationMet(actualMessage) {
             if (actualMessage === expectedMessage || isUndefined(expectedMessage)) {
               isOk = true
               if (simulateAddress) {
@@ -46,7 +46,7 @@ module.exports = function() {
             }
           })
 
-          bus.on('spec-done').then(function expectationFailure() {
+          bus.on('spec-done').then(function expectationNotMet() {
             if(!isOk)
               this.log('expectation-failure',
                 [ expectedAddress, expectedMessage ])

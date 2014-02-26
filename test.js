@@ -4,8 +4,13 @@ var chai  = require('chai')
 expect = chai.expect
 chai.should()
 
+// TODO: Expectation success should send pure message
+// TODO: Expectation failure should send pure message
+// TODO: Might want a didLog on the bus, but let's first make
+//       a firm decision if I really want the pure-log funcitonality in
+//       there.
 // TODO Implicit messages for expectation-failure
-//
+// TODO: Don't run wild workers, and visualize when that happens
 
 describe('given we have a spec and bus', function() {
   var bus;
@@ -21,9 +26,16 @@ describe('given we have a spec and bus', function() {
       .expect('render', '<p>hello!!</p>')
       .check(bus)
 
-    bus.log.wasSent('expectation-ok', [ 'render', '<p>hello!!</p>'] )
-    bus.log.all()[1].sender.name.should.equal('given')
-    bus.log.all()[3].sender.name.should.equal('expectationSuccess')
+    bus.log
+      .sender('given')
+      .didSend('greeting', 'hello!!')
+      .should.be.true
+
+    bus.log
+      .sender('expectationMet')
+      .didSend('expectation-ok', [ 'render', '<p>hello!!</p>'] )
+      .should.be.true
+
     bus.log.all()[3].sent[0].logOnly.should.equal(true)
   })
 
@@ -37,8 +49,11 @@ describe('given we have a spec and bus', function() {
       .expect('render', '<div>hello!!</div>') // <- spec wants divs!
       .check(bus)
 
-    bus.log.wasSent('expectation-failure', [ 'render', '<div>hello!!</div>'])
-    bus.log.all()[5].sender.name.should.equal('expectationFailure')
+    bus.log
+      .sender('expectationNotMet')
+      .didSend('expectation-failure', [ 'render', '<div>hello!!</div>'])
+      .should.be.true
+
     bus.log.all()[5].sent[0].logOnly.should.equal(true)
   })
 
@@ -57,7 +72,11 @@ describe('given we have a spec and bus', function() {
       .expect('ok', true)
       .check(bus)
 
-    bus.log.wasSent('expectation-ok', [ 'ok', true ] ).should.be.true
+
+    bus.log
+      .sender('expectationMet')
+      .didSend('expectation-ok', [ 'ok', true ] )
+      .should.be.true
   })
 
   it('multiple expect', function() {
@@ -74,8 +93,15 @@ describe('given we have a spec and bus', function() {
       .expect('c', true)
       .check(bus)
 
-    bus.log.wasSent('expectation-ok', [ 'b', true ] ).should.be.true
-    bus.log.wasSent('expectation-ok', [ 'c', true ] ).should.be.true
+    bus.log
+      .sender('expectationMet')
+      .didSend('expectation-ok', [ 'b', true ] )
+      .should.be.true
+
+    bus.log
+      .sender('expectationMet')
+      .didSend('expectation-ok', [ 'c', true ] )
+      .should.be.true
   })
 
   describe('expects that simulate messages', function() {
@@ -98,7 +124,8 @@ describe('given we have a spec and bus', function() {
         .check(bus)
 
       bus.log
-        .wasSent('expectation-ok', [ 'd' ])
+        .sender('expectationMet')
+        .didSend('expectation-ok', [ 'd' ])
         .should.be.true
     })
 
@@ -110,7 +137,8 @@ describe('given we have a spec and bus', function() {
         .check(bus)
 
       bus.log
-        .wasSent('expectation-ok', [ 'd' ])
+        .sender('expectationMet')
+        .didSend('expectation-ok', [ 'd' ])
         .should.be.true
     })
   })
@@ -118,21 +146,30 @@ describe('given we have a spec and bus', function() {
   it('implicit message', function() {
     bus.on('a').then(function() { this.send('b') })
     spec().given('a').expect('b').check(bus)
-    bus.log.wasSent('expectation-ok', [ 'b' ] ).should.be.true
+    bus.log
+      .sender('expectationMet')
+      .didSend('expectation-ok', [ 'b' ] )
+      .should.be.true
   })
 
   it('implicit message (null should not be translated to true)', function() {
     bus.on('a').then(function() { this.send('b', null) })
 
     spec().given('a').expect('b', null).check(bus)
-    bus.log.wasSent('expectation-ok', [ 'b', null ] ).should.be.true
+    bus.log
+      .sender('expectationMet')
+      .didSend('expectation-ok', [ 'b', null ] )
+      .should.be.true
   })
 
   it('expects w/o message are catch-all, not inclusive', function() {
     bus.on('a').then(function() { this.send('b', 'cat with a hat') })
 
     spec().given('a').expect('b').check(bus)
-    bus.log.wasSent('expectation-ok', [ 'b' ] ).should.be.true
+    bus.log
+      .sender('expectationMet')
+      .didSend('expectation-ok', [ 'b' ] )
+      .should.be.true
   })
 
   it('chainable givens', function() {
