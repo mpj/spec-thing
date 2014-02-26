@@ -4,11 +4,7 @@ var chai  = require('chai')
 expect = chai.expect
 chai.should()
 
-// TODO: Might want a didLog on the bus, but let's first make
-//       a firm decision if I really want the pure-log funcitonality in
-//       there. Update: Yes, it is necessary because otherwise
-//       logging identical messages on expectation faulures would
-//       cause infinite loops.
+
 // TODO Implicit messages for expectation-failure
 // TODO: Don't run wild workers, and visualize when that happens
 
@@ -27,16 +23,15 @@ describe('given we have a spec and bus', function() {
       .check(bus)
 
     bus.log
-      .sender('given')
+      .worker('given')
       .didSend('greeting', 'hello!!')
       .should.be.true
 
     bus.log
-      .sender('expectationMet')
-      .didSend('render', '<p>hello!!</p>')
+      .worker('expectationMet')
+      .didLog('render', '<p>hello!!</p>')
       .should.be.true
 
-    bus.log.all()[3].sent[0].logOnly.should.equal(true)
   })
 
   it('basic case (failure)', function() {
@@ -50,11 +45,10 @@ describe('given we have a spec and bus', function() {
       .check(bus)
 
     bus.log
-      .sender('expectationNotMet')
-      .didSend('render', '<div>hello!!</div>')
+      .worker('expectationNotMet')
+      .didLog('render', '<div>hello!!</div>')
       .should.be.true
 
-    bus.log.all()[5].sent[0].logOnly.should.equal(true)
   })
 
   it('multiple givens', function() {
@@ -74,8 +68,8 @@ describe('given we have a spec and bus', function() {
 
 
     bus.log
-      .sender('expectationMet')
-      .didSend('ok', true)
+      .worker('expectationMet')
+      .didLog('ok', true)
       .should.be.true
   })
 
@@ -94,13 +88,13 @@ describe('given we have a spec and bus', function() {
       .check(bus)
 
     bus.log
-      .sender('expectationMet')
-      .didSend('b', true)
+      .worker('expectationMet')
+      .didLog('b', true)
       .should.be.true
 
     bus.log
-      .sender('expectationMet')
-      .didSend('c', true)
+      .worker('expectationMet')
+      .didLog('c', true)
       .should.be.true
   })
 
@@ -124,8 +118,8 @@ describe('given we have a spec and bus', function() {
         .check(bus)
 
       bus.log
-        .sender('expectationMet')
-        .didSend('d')
+        .worker('expectationMet')
+        .didLog('d')
         .should.be.true
     })
 
@@ -137,8 +131,8 @@ describe('given we have a spec and bus', function() {
         .check(bus)
 
       bus.log
-        .sender('expectationMet')
-        .didSend('d')
+        .worker('expectationMet')
+        .didLog('d')
         .should.be.true
     })
   })
@@ -147,8 +141,8 @@ describe('given we have a spec and bus', function() {
     bus.on('a').then(function() { this.send('b') })
     spec().given('a').expect('b').check(bus)
     bus.log
-      .sender('expectationMet')
-      .didSend('b')
+      .worker('expectationMet')
+      .didLog('b')
       .should.be.true
   })
 
@@ -157,8 +151,8 @@ describe('given we have a spec and bus', function() {
 
     spec().given('a').expect('b', null).check(bus)
     bus.log
-      .sender('expectationMet')
-      .didSend('b', null)
+      .worker('expectationMet')
+      .didLog('b', null)
       .should.be.true
   })
 
@@ -167,8 +161,8 @@ describe('given we have a spec and bus', function() {
 
     spec().given('a').expect('b').check(bus)
     bus.log
-      .sender('expectationMet')
-      .didSend('b')
+      .worker('expectationMet')
+      .didLog('b')
       .should.be.true
   })
 
