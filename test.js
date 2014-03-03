@@ -1,4 +1,5 @@
 var createBus = require('bus-thing')
+var checkModule = require('./check-module')
 var spec = require('./spec')
 var chai  = require('chai')
 expect = chai.expect
@@ -7,8 +8,12 @@ chai.should()
 
 // TODO Multiple specs
 // TODO focus spec
+// TODO pending spec
+// TODO spec-done vs spec-expectations-done are bullshit event names
 // TODO Implicit messages for expectation-failure
 // TODO: Don't run wild workers, and visualize when that happens
+// TODO: Error on more than one argument to given (passing list instead of args)
+//       ... or perhaps make this allowed behavior?
 
 describe('given we have a spec and bus', function() {
   var bus;
@@ -199,6 +204,46 @@ describe('given we have a spec and bus', function() {
 
     bus.log.lastSent('spec-description').should.equal(
       'Given the a, expect some of that b')
+  })
+
+  it('multiple specs', function(done) {
+
+    var resultPromise = checkModule({
+      installer: function(bus) {
+        bus.on('add').then(function(operands) {
+          if (operands[0] === 3) operands[0] = 666; // <- I'm a bug!!!
+          this.send('add-result', operands[0] + operands[1])
+        })
+      },
+      specs: [
+        spec()
+          .describe('Adds 1 + 2')
+          .given('add', [1,2])
+          .expect('add-result', 3),
+
+        spec()
+          .describe('Adds 3 + 4')
+          .given('add', [3,4])
+          .expect('add-result', 7)
+      ]
+    })
+
+    resultPromise.then(function(result) {
+      result.should.deep.equal({
+        results: [
+          {
+            description: 'Adds 1 + 2',
+            success: true
+          },
+          {
+            description: 'Adds 3 + 4',
+            success: false
+          },
+        ]
+      })
+    }).done(done)
+
+
   })
 })
 

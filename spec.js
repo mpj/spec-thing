@@ -69,6 +69,7 @@ module.exports = function() {
       })
       bus.inject('spec-start')
       bus.inject('spec-done')
+      bus.inject('spec-expectations-done')
     },
     extend: function(parent) {
       me.instructions =

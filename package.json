@@ -12,7 +12,8 @@
     "bus-thing": "0.0.1",
     "mout": "~0.8.0",
     "esprima": "~1.0.4",
-    "deep-equal": "~0.2.1"
+    "deep-equal": "~0.2.1",
+    "q": "~1.0.0"
   },
   "devDependencies": {
     "mocha": "~1.17.1",
