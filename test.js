@@ -5,6 +5,8 @@ expect = chai.expect
 chai.should()
 
 
+// TODO Multiple specs
+// TODO focus spec
 // TODO Implicit messages for expectation-failure
 // TODO: Don't run wild workers, and visualize when that happens
 
@@ -182,6 +184,21 @@ describe('given we have a spec and bus', function() {
 
       bus.log.wasSent('f').should.be.true
 
+  })
+
+  it('description', function() {
+    var givenA = spec()
+      .describe('Given the a,')
+      .given('a')
+
+    spec()
+      .extend(givenA)
+      .describe('expect some of that b')
+      .expect('b')
+      .check(bus)
+
+    bus.log.lastSent('spec-description').should.equal(
+      'Given the a, expect some of that b')
   })
 })
 

@@ -1,5 +1,6 @@
 var partial = require('mout/function/partial')
 var isUndefined = require('mout/lang/isUndefined')
+var isFunction = require('mout/lang/isFunction')
 
 module.exports = function() {
 
@@ -18,8 +19,24 @@ module.exports = function() {
       me.instructions.push( [ 'expect', expectedAddress, expectedMessage ])
       return me
     },
+    describe: function(part) {
+      me.instructions.push(function(bus) {
+        bus
+          .on('spec-start')
+          .peek('spec-description')
+          .then(function(_, description) {
+            this.send('spec-description',
+              !!description ? description + ' ' + part : part)
+          })
+      })
+      return me
+    },
     check: function(bus) {
       me.instructions.forEach(function(ins) {
+        if (isFunction(ins)) {
+          ins(bus)
+          return
+        }
         if (ins[0] === 'given') {
           bus.on('spec-start').then(function given() {
             this.send(ins[1], ins[2])
@@ -54,7 +71,8 @@ module.exports = function() {
       bus.inject('spec-done')
     },
     extend: function(parent) {
-      me.instructions.concat(parent.instructions)
+      me.instructions =
+        me.instructions.concat(parent.instructions)
       return me
     }
   }
