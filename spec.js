@@ -64,7 +64,7 @@ module.exports = function() {
             }
           })
 
-          bus.on('spec-done').then(function expectationNotMet() {
+          bus.on('spec-check').then(function expectationNotMet() {
             if(!isOk)
               this.log(expectedAddress, expectedMessage)
           })
@@ -72,8 +72,8 @@ module.exports = function() {
 
       })
       bus.inject('spec-start')
+      bus.inject('spec-check')
       bus.inject('spec-done')
-      bus.inject('spec-expectations-done')
     },
     extend: function(parent) {
       me.instructions =

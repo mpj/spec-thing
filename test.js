@@ -5,8 +5,6 @@ var chai  = require('chai')
 expect = chai.expect
 chai.should()
 
-
-// TODO spec-done vs spec-expectations-done are bullshit event names
 // TODO Implicit messages for expectation-failure
 // TODO: Don't run wild workers, and visualize when that happens
 // TODO: Error on more than one argument to given (passing list instead of args)

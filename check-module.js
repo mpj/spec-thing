@@ -9,7 +9,7 @@ function checkModule(module) {
     var deferred = Q.defer()
     var bus = createBus()
     module.installer(bus)
-    bus.on('spec-expectations-done').then(function() {
+    bus.on('spec-done').then(function() {
       deferred.resolve(bus)
     })
     inspectee.check(bus)
@@ -20,7 +20,7 @@ function checkModule(module) {
     var bus = createBus()
     module.installer(bus)
     bus
-      .on('spec-expectations-done')
+      .on('spec-done')
       .peek('spec-description')
       .then(function(_, description) {
         var metSent = bus.log
