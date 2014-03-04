@@ -13,10 +13,21 @@ function checkModule(module) {
         var metSent = bus.log
           .worker('expectationMet')
           .didLog()
+        var notMetSent = bus.log
+          .worker('expectationNotMet')
+          .didLog()
+
+        var status;
+        if(notMetSent)
+          status = 'notmet'
+        else if(metSent)
+          status = 'met'
+        else
+          status = 'pending'
 
         deferred.resolve({
           description: description,
-          success: metSent
+          status: status
         })
       })
     spec.check(bus)

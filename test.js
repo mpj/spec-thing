@@ -6,14 +6,13 @@ expect = chai.expect
 chai.should()
 
 
-// TODO Multiple specs
 // TODO focus spec
-// TODO pending spec
 // TODO spec-done vs spec-expectations-done are bullshit event names
 // TODO Implicit messages for expectation-failure
 // TODO: Don't run wild workers, and visualize when that happens
 // TODO: Error on more than one argument to given (passing list instead of args)
 //       ... or perhaps make this allowed behavior?
+// TODO: More visible in log when a worker works but sends nothing
 
 describe('given we have a spec and bus', function() {
   var bus;
@@ -224,7 +223,11 @@ describe('given we have a spec and bus', function() {
         spec()
           .describe('Adds 3 + 4')
           .given('add', [3,4])
-          .expect('add-result', 7)
+          .expect('add-result', 7),
+
+        spec()
+          .describe('Multiplies 9 * 2')
+          .given('multiply', [ 9, 2 ])
       ]
     })
 
@@ -233,16 +236,19 @@ describe('given we have a spec and bus', function() {
         results: [
           {
             description: 'Adds 1 + 2',
-            success: true
+            status: 'met'
           },
           {
             description: 'Adds 3 + 4',
-            success: false
+            status: 'notmet'
           },
+          {
+            description: 'Multiplies 9 * 2',
+            status: 'pending'
+          }
         ]
       })
     }).done(done)
-
 
   })
 })
