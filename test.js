@@ -6,7 +6,6 @@ expect = chai.expect
 chai.should()
 
 
-// TODO focus spec
 // TODO spec-done vs spec-expectations-done are bullshit event names
 // TODO Implicit messages for expectation-failure
 // TODO: Don't run wild workers, and visualize when that happens
@@ -250,6 +249,42 @@ describe('given we have a spec and bus', function() {
       })
     }).done(done)
 
+  })
+
+  it ('inspecting single spec', function(done) {
+    var passiveSpecWorkerExecuted = false
+    var resultPromise = checkModule({
+      installer: function(bus) {
+        bus.on('a').then(function() {
+          passiveSpecWorkerExecuted = true
+          this.send('b')
+        })
+        bus.on('c').then(function() {
+          // Do nothing
+        })
+      },
+      specs: [
+        spec()
+          .describe('Given a, b should be sent')
+          .given('a')
+          .expect('b'),
+
+        spec()
+          .inspect()
+          .describe('Given c, d should be sent')
+          .given('c')
+          .expect('d')
+
+      ]
+    })
+
+    resultPromise.then(function(bus) {
+      passiveSpecWorkerExecuted.should.equal.false
+      bus.log
+        .worker('expectationNotMet')
+        .didLog('d')
+        .should.be.true
+    }).done(done)
   })
 })
 

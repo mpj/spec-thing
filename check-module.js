@@ -1,7 +1,20 @@
 var createBus = require('bus-thing')
 var Q = require('q')
+var find = require('mout/array/find')
 
 function checkModule(module) {
+  var inspectee = find(module.specs, 'inspectMe')
+  if(inspectee) {
+
+    var deferred = Q.defer()
+    var bus = createBus()
+    module.installer(bus)
+    bus.on('spec-expectations-done').then(function() {
+      deferred.resolve(bus)
+    })
+    inspectee.check(bus)
+    return deferred.promise
+  }
   var resultPromises = module.specs.map(function(spec) {
     var deferred = Q.defer()
     var bus = createBus()

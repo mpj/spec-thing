@@ -19,6 +19,10 @@ module.exports = function() {
       me.instructions.push( [ 'expect', expectedAddress, expectedMessage ])
       return me
     },
+    inspect: function() {
+      me.inspectMe = true
+      return me
+    },
     describe: function(part) {
       me.instructions.push(function(bus) {
         bus
