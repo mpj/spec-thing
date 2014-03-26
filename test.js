@@ -1,6 +1,6 @@
 var createBus = require('bus-thing')
-var checkModule = require('./check-module')
-var spec = require('./spec')
+var checkModule = require('./').checkModule
+var spec = require('./').spec
 var chai  = require('chai')
 expect = chai.expect
 chai.should()
