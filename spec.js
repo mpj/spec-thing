@@ -55,15 +55,13 @@ module.exports = {
             var simulateMessage = ins[4]
 
             var isOk = false
-            bus.on(expectedAddress).then(function expectationMet(actualMessage) {
-              if (actualMessage === expectedMessage || isUndefined(expectedMessage)) { // TODO: try removing this if
-                isOk = true
-                if (simulateAddress) {
-                  this.send(simulateAddress,
-                    isUndefined(simulateMessage) ? true : simulateMessage )
-                }
-                this.log(expectedAddress, expectedMessage)
+            bus.on(expectedAddress, expectedMessage).then(function expectationMet(actualMessage) {
+              isOk = true
+              if (simulateAddress) {
+                this.send(simulateAddress,
+                  isUndefined(simulateMessage) ? true : simulateMessage )
               }
+              this.log(expectedAddress, expectedMessage)
             })
 
             bus.on('spec-check').then(function expectationNotMet() {

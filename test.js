@@ -52,6 +52,11 @@ describe('given we have a spec and bus', function() {
       .didLog('render', '<div>hello!!</div>')
       .should.be.true
 
+    bus.log
+      .worker('expectationMet')
+      .didRun()
+      .should.be.false
+
   })
 
   it('multiple givens', function() {
