@@ -174,6 +174,25 @@ describe('given we have a spec and bus', function() {
       .should.be.true
   })
 
+
+  it('expects are matching, not comparing', function() {
+    bus
+      .on('a').then('b', {
+        propertyB: 'John',
+        propertyC: 'Wayne'
+      })
+
+    spec().given('a').expect('b', {
+      propertyC: 'Wayne'
+    }).check(bus)
+
+
+    bus.log
+      .worker('expectationMet')
+      .didLog('b')
+      .should.be.true
+  })
+
   it('chainable givens', function() {
     var givenAB = spec().given('a').given('b')
     var givenCD = spec().given('c').given('d')
